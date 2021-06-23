@@ -31,28 +31,30 @@ const Templates = (props) => {
     } else {
       setTemplateName("");
       setShowCreateForm(false);
+      getTemplates();
     }
   };
 
   // GET ALL TEMPLATES
   const [templates, setTemplates] = useState([]);
 
+  const getTemplates = async () => {
+    const response = await fetch("http://localhost:5000/templates", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    setTemplates(data);
+  };
   useEffect(() => {
-    (async () => {
-      const response = await fetch("http://localhost:5000/templates", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      setTemplates(data);
-    })();
+    getTemplates();
   }, []);
 
   // ADD TASK TO TEMPLATE
   const [showTemplateTask, setShowTemplateTask] = useState(false);
   const [taskDescription, setTaskDescription] = useState("");
-  const [taskId, setTaskId] = useState("");
+  const [templateId, setTemplateId] = useState("");
 
   const showTemplateTaskToggle = () => {
     setShowTemplateTask(!showTemplateTask);
@@ -63,12 +65,14 @@ const Templates = (props) => {
     setTaskDescription(e.target.value);
   };
 
-  const taskIdHandler = (e) => {
-    setTaskId(e.target.id);
+  const templateIdHandler = (e) => {
+    const index = e.target.selectedIndex;
+    const id = e.target.childNodes[index].id;
+    setTemplateId(id);
   };
 
   const addTask = async () => {
-    const response = await fetch("http://localhost:5000/template" + taskId, {
+    await fetch("http://localhost:5000/template/" + templateId, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -77,19 +81,21 @@ const Templates = (props) => {
         description: taskDescription,
       }),
     });
-    const data = await response.json();
-    console.log(data);
+    // TODO GET THE ID OF THE TEMPLATE TO ADD TEH TASK
     setShowTemplateTask(false);
+    setTaskDescription("");
   };
 
   return (
-    <div>
-      <Button className="bg-primary mx-5" onClick={showCreateFormToggle}>
-        Create Template
-      </Button>
-      <Button className="bg-primary" onClick={showTemplateTaskToggle}>
-        Add task to template
-      </Button>
+    <div className="">
+      <div className="d-flex justify-content-around">
+        <Button className="bg-primary" onClick={showCreateFormToggle}>
+          Create Template
+        </Button>
+        <Button className="bg-primary" onClick={showTemplateTaskToggle}>
+          Add task to template
+        </Button>
+      </div>
       {showCreateForm ? (
         <Form className="mt-1">
           <FormGroup>
@@ -110,7 +116,10 @@ const Templates = (props) => {
         <Form className="mt-1">
           <FormGroup>
             <Label>Select template</Label>
-            <Input type="select" name="select">
+            <Input type="select" name="select" onChange={templateIdHandler}>
+              <option selected disabled>
+                Select a template
+              </option>
               {templates.map((template) => {
                 return (
                   <option
