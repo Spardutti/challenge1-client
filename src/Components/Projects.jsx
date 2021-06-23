@@ -68,15 +68,17 @@ const Projects = (props) => {
                 getAllProjects={getAllProjects}
                 project={project._id}
               />
-              <Button
-                data-projectid={project._id}
-                className="bg-danger"
-                onClick={(e) => {
-                  deleteProject(e);
-                }}
-              >
-                Delete Project
-              </Button>
+              <div>
+                <Button
+                  data-projectid={project._id}
+                  className="bg-danger"
+                  onClick={(e) => {
+                    deleteProject(e);
+                  }}
+                >
+                  Delete Project
+                </Button>
+              </div>
             </div>
             <Table>
               <thead>
@@ -94,7 +96,6 @@ const Projects = (props) => {
                       <td>{task.description}</td>
                       {task.completed ? (
                         <td>
-                          {" "}
                           <i className="fas fa-check"></i>
                         </td>
                       ) : (
@@ -106,6 +107,7 @@ const Projects = (props) => {
                         onClick={(e) => {
                           udpateTask(e);
                         }}
+                        style={{ cursor: "pointer" }}
                       >
                         check
                       </td>
@@ -114,7 +116,10 @@ const Projects = (props) => {
                           deleteTask(e);
                         }}
                       >
-                        <i className="fas fa-trash"></i>
+                        <i
+                          className="fas fa-trash"
+                          style={{ cursor: "pointer" }}
+                        ></i>
                       </td>
                     </tr>
                   );
